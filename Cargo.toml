@@ -8,6 +8,7 @@ license = "MIT"
 authors = ["Corum Collective LLC <engineering@corumcollective.com>"]
 repository = "https://github.com/santhsecurity/mctrust"
 description = "Production-grade Monte Carlo Tree Search with UCT, RAVE, and pluggable environments"
+readme = "README.md"
 keywords = ["mcts", "monte-carlo", "tree-search", "ai", "optimization"]
 categories = ["algorithms", "game-development", "science"]
 
