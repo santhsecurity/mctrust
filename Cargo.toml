@@ -1,0 +1,24 @@
+[package]
+exclude = ["target/"]
+name = "mctrust"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.70"
+license = "MIT"
+authors = ["Corum Collective LLC <engineering@corumcollective.com>"]
+repository = "https://github.com/santhsecurity/mctrust"
+description = "Production-grade Monte Carlo Tree Search with UCT, RAVE, and pluggable environments"
+keywords = ["mcts", "monte-carlo", "tree-search", "ai", "optimization"]
+categories = ["algorithms", "game-development", "science"]
+
+[dependencies]
+rand = "0.8"
+serde = { version = "1", features = ["derive"] }
+thiserror = "2"
+toml = "0.8"
+
+[dev-dependencies]
+
+[features]
+default = []
+serde = []

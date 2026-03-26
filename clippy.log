@@ -1,0 +1,389 @@
+    Checking mctrust v0.1.0 (/home/mukund-thiru/Santh/libs/mctrust)
+error: enum `Step` is never used
+  --> src/game_search.rs:33:6
+   |
+33 | enum Step { Inc, Dec }
+   |      ^^^^
+   |
+   = note: `-D dead-code` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(dead_code)]`
+
+error: item in documentation is missing backticks
+  --> src/game_search.rs:61:18
+   |
+61 | /// let config = SearchConfig::builder().iterations(1_000).max_depth(15).build();
+   |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#doc_markdown
+   = note: `-D clippy::doc-markdown` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::doc_markdown)]`
+help: try
+   |
+61 - /// let config = SearchConfig::builder().iterations(1_000).max_depth(15).build();
+61 + /// let config = `SearchConfig::builder().iterations(1_000).max_depth(15).build()`;
+   |
+
+error: item in documentation is missing backticks
+  --> src/game_search.rs:62:22
+   |
+62 | /// let mut search = GameSearch::new(game, config);
+   |                      ^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#doc_markdown
+help: try
+   |
+62 - /// let mut search = GameSearch::new(game, config);
+62 + /// let mut search = `GameSearch::new(game`, config);
+   |
+
+error: item in documentation is missing backticks
+  --> src/game_search.rs:64:25
+   |
+64 | /// if let Some(best) = search.run() {
+   |                         ^^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#doc_markdown
+help: try
+   |
+64 - /// if let Some(best) = search.run() {
+64 + /// if let Some(best) = `search.run()` {
+   |
+
+error: item in documentation is missing backticks
+  --> src/game_search.rs:68:10
+   |
+68 | /// let _all_moves = vec![Step::Inc, Step::Dec];
+   |          ^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#doc_markdown
+help: try
+   |
+68 - /// let _all_moves = vec![Step::Inc, Step::Dec];
+68 + /// let _`all_moves` = vec![Step::Inc, Step::Dec];
+   |
+
+error: item in documentation is missing backticks
+  --> src/game_search.rs:68:27
+   |
+68 | /// let _all_moves = vec![Step::Inc, Step::Dec];
+   |                           ^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#doc_markdown
+help: try
+   |
+68 - /// let _all_moves = vec![Step::Inc, Step::Dec];
+68 + /// let _all_moves = vec![`Step::Inc`, Step::Dec];
+   |
+
+error: item in documentation is missing backticks
+  --> src/game_search.rs:68:38
+   |
+68 | /// let _all_moves = vec![Step::Inc, Step::Dec];
+   |                                      ^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#doc_markdown
+help: try
+   |
+68 - /// let _all_moves = vec![Step::Inc, Step::Dec];
+68 + /// let _all_moves = vec![Step::Inc, `Step::Dec`];
+   |
+
+error: it is more idiomatic to use `Option<&T>` instead of `&Option<T>`
+   --> src/game_search.rs:296:5
+    |
+296 | /     fn selection_score(
+297 | |         &mut self,
+298 | |         child: u32,
+299 | |         parent_visits: u32,
+300 | |         legal_actions: &[E::Action],
+301 | |         priors: &Option<Vec<f64>>,
+    | |                 ----------------- help: change this to: `Option<&Vec<f64>>`
+...   |
+339 | |     }
+    | |_____^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#ref_option
+    = note: `-D clippy::ref-option` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::ref_option)]`
+
+error: unused `self` argument
+   --> src/game_search.rs:356:26
+    |
+356 |     fn progressive_limit(&self, parent_visits: u32, cfg: &ProgressiveWideningConfig) -> usize {
+    |                          ^^^^^
+    |
+    = help: consider refactoring to an associated function
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#unused_self
+    = note: `-D clippy::unused-self` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::unused_self)]`
+
+error: casting `f64` to `usize` may truncate the value
+   --> src/game_search.rs:358:50
+    |
+358 |         let candidate = cfg.minimum_children.max(budget as usize);
+    |                                                  ^^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#cast_possible_truncation
+    = note: `-D clippy::cast-possible-truncation` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::cast_possible_truncation)]`
+
+error: casting `f64` to `usize` may lose the sign of the value
+   --> src/game_search.rs:358:50
+    |
+358 |         let candidate = cfg.minimum_children.max(budget as usize);
+    |                                                  ^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#cast_sign_loss
+    = note: `-D clippy::cast-sign-loss` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::cast_sign_loss)]`
+
+error: this could be rewritten as `let...else`
+   --> src/game_search.rs:364:9
+    |
+364 | /         let action = match self.nodes[parent_id as usize].unexpanded.pop() {
+365 | |             Some(a) => a,
+366 | |             None => return parent_id,
+367 | |         };
+    | |__________^ help: consider writing: `let Some(action) = self.nodes[parent_id as usize].unexpanded.pop() else { return parent_id };`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#manual_let_else
+    = note: `-D clippy::manual-let-else` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::manual_let_else)]`
+
+error: this could be rewritten as `let...else`
+   --> src/game_search.rs:372:9
+    |
+372 | /         let child_id = match u32::try_from(self.nodes.len()) {
+373 | |             Ok(id) => id,
+374 | |             Err(_) => return parent_id,
+375 | |         };
+    | |__________^ help: consider writing: `let Ok(child_id) = u32::try_from(self.nodes.len()) else { return parent_id };`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#manual_let_else
+
+error: casting `usize` to `u32` may truncate the value on targets with 64-bit wide pointers
+   --> src/bandit.rs:317:65
+    |
+317 |             let idx = u32::try_from(self.nodes.len()).unwrap_or(self.nodes.len() as u32);
+    |                                                                 ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+317 -             let idx = u32::try_from(self.nodes.len()).unwrap_or(self.nodes.len() as u32);
+317 +             let idx = u32::try_from(self.nodes.len()).unwrap_or(u32::try_from(self.nodes.len()));
+    |
+
+error: accessing first element with `self
+                   .nodes.get(0)`
+   --> src/bandit.rs:347:42
+    |
+347 |           let available_groups: Vec<u32> = self
+    |  __________________________________________^
+348 | |             .nodes
+349 | |             .get(0)
+    | |___________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#get_first
+    = note: `-D clippy::get-first` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::get_first)]`
+help: try
+    |
+347 ~         let available_groups: Vec<u32> = self
+348 +             .nodes.first()
+    |
+
+error: strict comparison of `f32` or `f64`
+   --> src/config.rs:322:9
+    |
+322 |         assert_eq!(widening.exponent, 0.4);
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#float_cmp
+    = note: `-D clippy::float-cmp` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::float_cmp)]`
+    = note: this error originates in the macro `assert_eq` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: called `iter().copied().collect()` on a slice to create a `Vec`. Calling `to_vec()` is both faster and more readable
+   --> src/bandit.rs:399:62
+    |
+399 |         let sibling_groups: Vec<u32> = self.nodes[0].children.iter().copied().collect();
+    |                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try: `.to_vec()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#iter_cloned_collect
+    = note: `-D clippy::iter-cloned-collect` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::iter_cloned_collect)]`
+
+error: using `matches!` to pattern match a bool
+   --> src/environment.rs:113:17
+    |
+113 |         assert!(matches!(GameState::Terminal(Reward::WIN).is_terminal(), true));
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using the condition directly: `GameState::Terminal(Reward::WIN).is_terminal()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#redundant_pattern_matching
+    = note: `-D clippy::redundant-pattern-matching` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::redundant_pattern_matching)]`
+
+error: could not compile `mctrust` (lib) due to 16 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: this comparison involving the minimum or maximum element for this type contains a case that is always true or always false
+   --> src/game_search.rs:727:17
+    |
+727 |         assert!(resumed.total_simulations() >= 0);
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: because `0` is the minimum value for this type, this comparison is always true
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#absurd_extreme_comparisons
+    = note: `#[deny(clippy::absurd_extreme_comparisons)]` on by default
+
+error: strict comparison of `f32` or `f64`
+  --> src/reward.rs:99:9
+   |
+99 |         assert_eq!(r.value(), 1.0);
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#float_cmp
+   = note: this error originates in the macro `assert_eq` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: strict comparison of `f32` or `f64`
+   --> src/reward.rs:104:9
+    |
+104 |         assert_eq!(Reward::WIN.value(), 1.0);
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#float_cmp
+    = note: this error originates in the macro `assert_eq` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: strict comparison of `f32` or `f64`
+   --> src/reward.rs:105:9
+    |
+105 |         assert_eq!(Reward::LOSS.value(), -1.0);
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#float_cmp
+    = note: this error originates in the macro `assert_eq` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: strict comparison of `f32` or `f64`
+   --> src/reward.rs:106:9
+    |
+106 |         assert_eq!(Reward::DRAW.value(), 0.0);
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#float_cmp
+    = note: this error originates in the macro `assert_eq` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: casting `u64` to `u32` may truncate the value
+   --> src/bandit.rs:464:31
+    |
+464 |             search.add_arm(i, (i / 5) as u32);
+    |                               ^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+464 -             search.add_arm(i, (i / 5) as u32);
+464 +             search.add_arm(i, u32::try_from(i / 5));
+    |
+
+error: only a `panic!` in `if`-then statement
+   --> src/bandit.rs:494:13
+    |
+494 | /             if count > 100 {
+495 | |                 panic!("budget not respected");
+496 | |             }
+    | |_____________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#manual_assert
+    = note: `-D clippy::manual-assert` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::manual_assert)]`
+help: replace `if`-then-`panic!` with `assert!`
+    |
+494 -             if count > 100 {
+495 -                 panic!("budget not respected");
+496 -             }
+494 +             assert!(count <= 100, "budget not respected")
+    |
+
+error: casting `u64` to `u32` may truncate the value
+   --> src/bandit.rs:514:31
+    |
+514 |             search.add_arm(i, (i / 5) as u32);
+    |                               ^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+514 -             search.add_arm(i, (i / 5) as u32);
+514 +             search.add_arm(i, u32::try_from(i / 5));
+    |
+
+error: casting `u64` to `u32` may truncate the value
+   --> src/bandit.rs:533:31
+    |
+533 |             search.add_arm(i, (i / 5) as u32);
+    |                               ^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+533 -             search.add_arm(i, (i / 5) as u32);
+533 +             search.add_arm(i, u32::try_from(i / 5));
+    |
+
+error: casting `u64` to `u32` may truncate the value
+   --> src/bandit.rs:565:31
+    |
+565 |             search.add_arm(i, (i / 3) as u32);
+    |                               ^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+565 -             search.add_arm(i, (i / 3) as u32);
+565 +             search.add_arm(i, u32::try_from(i / 3));
+    |
+
+error: casting `u64` to `u32` may truncate the value
+   --> src/bandit.rs:590:27
+    |
+590 |             s1.add_arm(i, (i / 5) as u32);
+    |                           ^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+590 -             s1.add_arm(i, (i / 5) as u32);
+590 +             s1.add_arm(i, u32::try_from(i / 5));
+    |
+
+error: casting `u64` to `u32` may truncate the value
+   --> src/bandit.rs:591:27
+    |
+591 |             s2.add_arm(i, (i / 5) as u32);
+    |                           ^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+591 -             s2.add_arm(i, (i / 5) as u32);
+591 +             s2.add_arm(i, u32::try_from(i / 5));
+    |
+
+error: comparison is useless due to type limits
+   --> src/game_search.rs:727:17
+    |
+727 |         assert!(resumed.total_simulations() >= 0);
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `-D unused-comparisons` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(unused_comparisons)]`
+
+error: could not compile `mctrust` (lib test) due to 31 previous errors
