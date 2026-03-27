@@ -45,7 +45,19 @@ impl Default for BanditConfig {
 }
 
 impl BanditConfig {
-    /// Creates a builder for fluent configuration.
+    /// Creates a builder initialized with default bandit-search settings.
+    ///
+    /// # Parameters
+    ///
+    /// This function takes no additional parameters.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`BanditConfigBuilder`] seeded from [`BanditConfig::default`].
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn builder() -> BanditConfigBuilder {
         BanditConfigBuilder(Self::default())
@@ -57,6 +69,18 @@ pub struct BanditConfigBuilder(BanditConfig);
 
 impl BanditConfigBuilder {
     /// Sets the UCT exploration constant.
+    ///
+    /// # Parameters
+    ///
+    /// - `c`: Exploration multiplier to store in the builder.
+    ///
+    /// # Returns
+    ///
+    /// Returns the updated builder.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn exploration_constant(mut self, c: f64) -> Self {
         self.0.exploration_constant = c;
@@ -64,20 +88,56 @@ impl BanditConfigBuilder {
     }
 
     /// Sets the RAVE bias weight.
+    ///
+    /// # Parameters
+    ///
+    /// - `bias`: RAVE bias value to store in the builder.
+    ///
+    /// # Returns
+    ///
+    /// Returns the updated builder.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn rave_bias(mut self, bias: f64) -> Self {
         self.0.rave_bias = bias;
         self
     }
 
-    /// Sets the maximum number of pulls.
+    /// Sets the maximum number of arm pulls.
+    ///
+    /// # Parameters
+    ///
+    /// - `n`: Pull budget to enforce, or `0` for unlimited.
+    ///
+    /// # Returns
+    ///
+    /// Returns the updated builder.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn max_pulls(mut self, n: u64) -> Self {
         self.0.max_pulls = n;
         self
     }
 
-    /// Builds the configuration.
+    /// Finalizes the builder and returns the accumulated [`BanditConfig`].
+    ///
+    /// # Parameters
+    ///
+    /// This function takes no additional parameters.
+    ///
+    /// # Returns
+    ///
+    /// Returns the built [`BanditConfig`].
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn build(self) -> BanditConfig {
         self.0

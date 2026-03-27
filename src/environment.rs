@@ -18,13 +18,37 @@ pub enum GameState {
 }
 
 impl GameState {
-    /// Returns `true` when the state is terminal.
+    /// Reports whether the game state is terminal.
+    ///
+    /// # Parameters
+    ///
+    /// This function takes no additional parameters.
+    ///
+    /// # Returns
+    ///
+    /// Returns `true` for every variant except [`GameState::Ongoing`].
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn is_terminal(self) -> bool {
         !matches!(self, Self::Ongoing)
     }
 
-    /// Returns the terminal reward when available.
+    /// Converts terminal states into a reward when one is defined.
+    ///
+    /// # Parameters
+    ///
+    /// This function takes no additional parameters.
+    ///
+    /// # Returns
+    ///
+    /// Returns `Some(reward)` for terminal states and `None` for ongoing states.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn reward(self) -> Option<Reward> {
         match self {
@@ -56,7 +80,19 @@ pub struct Heuristic {
 }
 
 impl Heuristic {
-    /// Creates a heuristic from a reward estimate.
+    /// Creates a heuristic containing a concrete reward estimate.
+    ///
+    /// # Parameters
+    ///
+    /// - `value`: Estimated reward for the current state.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`Heuristic`] with `value` populated.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn from_reward(value: Reward) -> Self {
         Self { value: Some(value) }

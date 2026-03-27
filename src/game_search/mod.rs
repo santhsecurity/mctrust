@@ -93,7 +93,40 @@ where
 }
 
 impl<E: Environment> GameSearch<E> {
-    /// Creates a new search engine from an environment and configuration.
+    /// Creates a new game-tree search from an environment and configuration.
+    ///
+    /// # Parameters
+    ///
+    /// - `environment`: Root state to search from.
+    /// - `config`: Search hyperparameters.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`GameSearch`] with a root node populated from the environment's legal
+    /// actions.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use mctrust::{Environment, GameSearch, GameState, SearchConfig};
+    ///
+    /// #[derive(Clone)]
+    /// struct Env;
+    ///
+    /// impl Environment for Env {
+    ///     type Action = ();
+    ///     fn legal_actions(&self) -> Vec<Self::Action> { vec![()] }
+    ///     fn apply(&mut self, _action: &Self::Action) {}
+    ///     fn evaluate(&self) -> GameState { GameState::Draw }
+    /// }
+    ///
+    /// let search = GameSearch::new(Env, SearchConfig::default());
+    /// assert_eq!(search.tree_size(), 1);
+    /// ```
     #[must_use]
     pub fn new(environment: E, config: SearchConfig) -> Self {
         let root_actions = environment.legal_actions();
@@ -107,7 +140,21 @@ impl<E: Environment> GameSearch<E> {
         }
     }
 
-    /// Creates a new search engine with a fixed seed for reproducible results.
+    /// Creates a new game-tree search with a deterministic RNG seed.
+    ///
+    /// # Parameters
+    ///
+    /// - `environment`: Root state to search from.
+    /// - `config`: Search hyperparameters.
+    /// - `seed`: Seed used for rollout randomness and tie-breaking.
+    ///
+    /// # Returns
+    ///
+    /// Returns a deterministic [`GameSearch`].
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn with_seed(environment: E, config: SearchConfig, seed: u64) -> Self {
         let root_actions = environment.legal_actions();
@@ -125,6 +172,17 @@ impl<E: Environment> GameSearch<E> {
     ///
     /// This can be used to pause and resume search work in a separate
     /// process.
+    /// # Parameters
+    ///
+    /// This function takes no additional parameters.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`GameSearchCheckpoint`] containing the root environment, config, and tree.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn checkpoint(&self) -> GameSearchCheckpoint<E>
     where
@@ -139,6 +197,18 @@ impl<E: Environment> GameSearch<E> {
     }
 
     /// Restores a search state from a checkpoint.
+    ///
+    /// # Parameters
+    ///
+    /// - `checkpoint`: Previously captured search state.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`GameSearch`] resumed from the checkpoint.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn restore(checkpoint: GameSearchCheckpoint<E>) -> Self
     where
@@ -155,8 +225,39 @@ impl<E: Environment> GameSearch<E> {
 
     /// Runs the search for the configured number of iterations.
     ///
-    /// Returns the best root action (the one with the most visits),
-    /// or `None` if no legal actions exist.
+    /// # Parameters
+    ///
+    /// This function takes no additional parameters.
+    ///
+    /// # Returns
+    ///
+    /// Returns the most-visited root action, or `None` if the environment has no legal actions.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use mctrust::{Environment, GameSearch, GameState, Reward, SearchConfig};
+    ///
+    /// #[derive(Clone)]
+    /// struct Env(bool);
+    ///
+    /// #[derive(Clone, Debug, PartialEq)]
+    /// enum Action { Win }
+    ///
+    /// impl Environment for Env {
+    ///     type Action = Action;
+    ///     fn legal_actions(&self) -> Vec<Self::Action> { if self.0 { vec![] } else { vec![Action::Win] } }
+    ///     fn apply(&mut self, _action: &Self::Action) { self.0 = true; }
+    ///     fn evaluate(&self) -> GameState { if self.0 { GameState::Win(Reward::WIN) } else { GameState::Ongoing } }
+    /// }
+    ///
+    /// let mut search = GameSearch::with_seed(Env(false), SearchConfig::builder().iterations(8).build(), 1);
+    /// assert_eq!(search.run(), Some(Action::Win));
+    /// ```
     pub fn run(&mut self) -> Option<E::Action> {
         for _ in 0..self.config.iterations {
             let mut env = self.root_env.clone();
@@ -185,7 +286,19 @@ impl<E: Environment> GameSearch<E> {
         self.best_root_action()
     }
 
-    /// Returns statistics for each root child (for diagnostics or visualization).
+    /// Returns statistics for each root child.
+    ///
+    /// # Parameters
+    ///
+    /// This function takes no additional parameters.
+    ///
+    /// # Returns
+    ///
+    /// Returns `(action, stats)` pairs for every expanded child of the root.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     pub fn root_stats(&self) -> Vec<(E::Action, NodeStats)>
     where
         E::Action: Clone,
@@ -214,17 +327,53 @@ impl<E: Environment> GameSearch<E> {
             .collect()
     }
 
-    /// Returns the total number of nodes in the tree.
+    /// Returns the total number of nodes currently stored in the search tree.
+    ///
+    /// # Parameters
+    ///
+    /// This function takes no additional parameters.
+    ///
+    /// # Returns
+    ///
+    /// Returns the arena length.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     pub fn tree_size(&self) -> usize {
         self.nodes.len()
     }
 
     /// Returns the total number of simulations run so far.
+    ///
+    /// # Parameters
+    ///
+    /// This function takes no additional parameters.
+    ///
+    /// # Returns
+    ///
+    /// Returns the root visit count.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     pub fn total_simulations(&self) -> u32 {
         self.nodes[0].visits
     }
 
-    /// Returns whether the search uses RAVE blending.
+    /// Reports whether the configured search uses RAVE blending.
+    ///
+    /// # Parameters
+    ///
+    /// This function takes no additional parameters.
+    ///
+    /// # Returns
+    ///
+    /// Returns `true` when `config.rave.enabled` is set.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn uses_rave(&self) -> bool {
         self.config.rave.enabled

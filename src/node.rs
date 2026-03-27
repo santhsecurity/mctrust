@@ -37,7 +37,19 @@ pub struct Node<A> {
 }
 
 impl<A: Clone> Node<A> {
-    /// Create a root node with the given legal actions.
+    /// Creates a root node seeded with the legal actions available at the root state.
+    ///
+    /// # Parameters
+    ///
+    /// - `legal_actions`: Actions that may be expanded from the root.
+    ///
+    /// # Returns
+    ///
+    /// Returns a root [`Node`] with empty statistics and no parent/action metadata.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     pub fn root(legal_actions: Vec<A>) -> Self {
         Self {
             parent: None,
@@ -52,7 +64,21 @@ impl<A: Clone> Node<A> {
         }
     }
 
-    /// Create a child node with the given parent, action, and legal actions.
+    /// Creates a child node linked to an existing parent and action.
+    ///
+    /// # Parameters
+    ///
+    /// - `parent`: Parent node index.
+    /// - `action`: Action that led from the parent into this node.
+    /// - `legal_actions`: Actions available for later expansion from this node.
+    ///
+    /// # Returns
+    ///
+    /// Returns a new child [`Node`] with zeroed statistics.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     pub fn child(parent: u32, action: A, legal_actions: Vec<A>) -> Self {
         Self {
             parent: Some(parent),
@@ -67,29 +93,94 @@ impl<A: Clone> Node<A> {
         }
     }
 
-    /// Check if all actions have been expanded.
+    /// Reports whether the node has expanded every currently known action.
+    ///
+    /// # Parameters
+    ///
+    /// This function takes no additional parameters.
+    ///
+    /// # Returns
+    ///
+    /// Returns `true` when `unexpanded` is empty.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     pub fn is_fully_expanded(&self) -> bool {
         self.unexpanded.is_empty()
     }
 
-    /// Record a reward update for this node.
+    /// Applies a standard UCT backpropagation update to the node.
+    ///
+    /// # Parameters
+    ///
+    /// - `reward`: Simulation reward to accumulate.
+    ///
+    /// # Returns
+    ///
+    /// This function returns no value.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     pub fn apply_uct_update(&mut self, reward: f64) {
         self.visits += 1;
         self.cumulative_reward += reward;
     }
 
-    /// Record a RAVE update for this node.
+    /// Applies an AMAF/RAVE update to the node.
+    ///
+    /// # Parameters
+    ///
+    /// - `reward`: Reward contribution to accumulate in the RAVE statistics.
+    ///
+    /// # Returns
+    ///
+    /// This function returns no value.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     pub fn apply_rave_update(&mut self, reward: f64) {
         self.rave_visits += 1;
         self.rave_cumulative += reward;
     }
 
-    /// Calculate UCT score for this node.
+    /// Calculates the node's plain UCT score.
+    ///
+    /// # Parameters
+    ///
+    /// - `parent_visits`: Visit count of the parent node.
+    /// - `exploration_constant`: Exploration multiplier to apply.
+    ///
+    /// # Returns
+    ///
+    /// Returns `f64::INFINITY` for unvisited nodes or the standard exploitation plus
+    /// exploration score otherwise.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     pub fn uct_score(&self, parent_visits: u32, exploration_constant: f64) -> f64 {
         self.uct_score_with_rave(parent_visits, exploration_constant, false, 0.0)
     }
 
-    /// Calculate a UCT+RAVE score for this node.
+    /// Calculates a blended UCT+RAVE score for this node.
+    ///
+    /// # Parameters
+    ///
+    /// - `parent_visits`: Visit count of the parent node.
+    /// - `exploration_constant`: Exploration multiplier to apply.
+    /// - `rave_enabled`: Whether RAVE blending should be used.
+    /// - `rave_bias`: Bias factor controlling how strongly RAVE influences the score.
+    ///
+    /// # Returns
+    ///
+    /// Returns a blended score, or the plain UCT score when RAVE is disabled or empty.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     pub fn uct_score_with_rave(
         &self,
         parent_visits: u32,

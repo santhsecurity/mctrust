@@ -72,13 +72,47 @@ pub struct BanditSearchCheckpoint {
 }
 
 impl BanditSearch {
-    /// Creates a new bandit search engine.
+    /// Creates a new bandit search engine with an entropy-seeded RNG.
+    ///
+    /// # Parameters
+    ///
+    /// - `config`: Search hyperparameters controlling exploration, RAVE, and pull budget.
+    ///
+    /// # Returns
+    ///
+    /// Returns an empty [`BanditSearch`] with only the root node initialized.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use mctrust::{BanditConfig, BanditSearch};
+    ///
+    /// let search = BanditSearch::new(BanditConfig::default());
+    /// assert_eq!(search.total_pulls(), 0);
+    /// ```
     #[must_use]
     pub fn new(config: BanditConfig) -> Self {
         Self::with_seed(config, rand::rngs::StdRng::from_entropy())
     }
 
-    /// Creates a new bandit search with a fixed seed for reproducibility.
+    /// Creates a new bandit search with a deterministic RNG seed.
+    ///
+    /// # Parameters
+    ///
+    /// - `config`: Search hyperparameters.
+    /// - `seed`: Seed used to initialize the RNG.
+    ///
+    /// # Returns
+    ///
+    /// Returns an empty [`BanditSearch`] with deterministic tie-breaking behavior.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn new_seeded(config: BanditConfig, seed: u64) -> Self {
         Self::with_seed(config, rand::rngs::StdRng::seed_from_u64(seed))
@@ -108,7 +142,19 @@ impl BanditSearch {
         }
     }
 
-    /// Creates a serializable checkpoint for this search.
+    /// Creates a serializable checkpoint of the current bandit search state.
+    ///
+    /// # Parameters
+    ///
+    /// This function takes no additional parameters.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`BanditSearchCheckpoint`] containing nodes, mappings, and budget state.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn checkpoint(&self) -> BanditSearchCheckpoint {
         BanditSearchCheckpoint {
@@ -120,7 +166,19 @@ impl BanditSearch {
         }
     }
 
-    /// Restores state from a checkpoint.
+    /// Restores a bandit search from a checkpoint using a fresh entropy-seeded RNG.
+    ///
+    /// # Parameters
+    ///
+    /// - `checkpoint`: Previously captured search state.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`BanditSearch`] resumed from the checkpoint.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn restore(checkpoint: BanditSearchCheckpoint) -> Self {
         Self {
@@ -133,7 +191,20 @@ impl BanditSearch {
         }
     }
 
-    /// Restores state from checkpoint with deterministic RNG seed.
+    /// Restores a bandit search from a checkpoint with a deterministic RNG seed.
+    ///
+    /// # Parameters
+    ///
+    /// - `checkpoint`: Previously captured search state.
+    /// - `seed`: Seed used for deterministic tie-breaking after restore.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`BanditSearch`] resumed from the checkpoint.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn restore_with_seed(checkpoint: BanditSearchCheckpoint, seed: u64) -> Self {
         Self {
@@ -150,6 +221,28 @@ impl BanditSearch {
     ///
     /// Must be called before the first [`next_arm`](Self::next_arm).
     /// Arms within the same group share RAVE statistics.
+    /// # Parameters
+    ///
+    /// - `arm_id`: Unique identifier for the arm to register.
+    /// - `group_id`: Group identifier used for RAVE sharing and group selection.
+    ///
+    /// # Returns
+    ///
+    /// This function returns no value.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use mctrust::{BanditConfig, BanditSearch};
+    ///
+    /// let mut search = BanditSearch::new_seeded(BanditConfig::default(), 7);
+    /// search.add_arm(10, 1);
+    /// assert_eq!(search.next_arm(), Some(10));
+    /// ```
     pub fn add_arm(&mut self, arm_id: u64, group_id: u32) {
         if self.arm_to_node.contains_key(&arm_id) {
             return;
@@ -191,6 +284,18 @@ impl BanditSearch {
     /// Selects the next arm to pull using UCT + RAVE.
     ///
     /// Returns `None` when the budget is exhausted or all arms have been tried.
+    /// # Parameters
+    ///
+    /// This function takes no additional parameters.
+    ///
+    /// # Returns
+    ///
+    /// Returns the next arm identifier to evaluate, or `None` when the pull budget is
+    /// exhausted or every registered arm has been tried.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     pub fn next_arm(&mut self) -> Option<u64> {
         // Budget check.
         if self.config.max_pulls > 0 && self.pulls_executed >= self.config.max_pulls {
@@ -241,6 +346,18 @@ impl BanditSearch {
     /// Reports the reward for a previously pulled arm.
     ///
     /// Triggers backpropagation and RAVE cross-group updates.
+    /// # Parameters
+    ///
+    /// - `arm_id`: Previously selected arm identifier.
+    /// - `reward`: Observed reward to backpropagate.
+    ///
+    /// # Returns
+    ///
+    /// This function returns no value.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     pub fn observe(&mut self, arm_id: u64, reward: f64) {
         let Some(node_idx) = self.arm_to_node.get(&arm_id) else {
             return;
@@ -278,13 +395,37 @@ impl BanditSearch {
     ///
     /// Use this to inject domain-specific priors (e.g., from a mixture-of-experts
     /// gating network, from prior scan results, or from static analysis).
+    /// # Parameters
+    ///
+    /// - `group_id`: Target group identifier.
+    /// - `bias`: Bias to apply during group tie-breaking.
+    ///
+    /// # Returns
+    ///
+    /// This function returns no value.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     pub fn set_group_bias(&mut self, group_id: u32, bias: f64) {
         if let Some(&node_idx) = self.group_to_node.get(&group_id) {
             self.nodes[node_idx as usize].bias = bias;
         }
     }
 
-    /// Returns per-group statistics.
+    /// Returns a snapshot of per-group search statistics.
+    ///
+    /// # Parameters
+    ///
+    /// This function takes no additional parameters.
+    ///
+    /// # Returns
+    ///
+    /// Returns one [`GroupStats`] record for each registered group.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn group_stats(&self) -> Vec<GroupStats> {
         self.nodes[0]
@@ -309,7 +450,19 @@ impl BanditSearch {
             .collect()
     }
 
-    /// Returns the total number of pulls executed.
+    /// Returns the total number of pulls executed so far.
+    ///
+    /// # Parameters
+    ///
+    /// This function takes no additional parameters.
+    ///
+    /// # Returns
+    ///
+    /// Returns the cumulative pull count.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn total_pulls(&self) -> u64 {
         self.pulls_executed

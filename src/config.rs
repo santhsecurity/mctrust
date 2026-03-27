@@ -97,7 +97,28 @@ impl Default for SearchConfig {
 }
 
 impl SearchConfig {
-    /// Creates a builder for fluent configuration.
+    /// Creates a builder initialized with the default search configuration.
+    ///
+    /// # Parameters
+    ///
+    /// This function takes no additional parameters.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`SearchConfigBuilder`] seeded with [`SearchConfig::default`].
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use mctrust::SearchConfig;
+    ///
+    /// let config = SearchConfig::builder().iterations(256).build();
+    /// assert_eq!(config.iterations, 256);
+    /// ```
     #[must_use]
     pub fn builder() -> SearchConfigBuilder {
         SearchConfigBuilder(Self::default())
@@ -105,19 +126,52 @@ impl SearchConfig {
 
     /// Parses a config from TOML.
     ///
+    /// # Parameters
+    ///
+    /// - `input`: TOML document that matches the [`SearchConfig`] schema.
+    ///
+    /// # Returns
+    ///
+    /// Returns the parsed [`SearchConfig`].
+    ///
     /// # Errors
     ///
     /// Returns [`toml::de::Error`] when the configuration cannot be parsed.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use mctrust::SearchConfig;
+    ///
+    /// let config = SearchConfig::from_toml_str("iterations = 32").unwrap();
+    /// assert_eq!(config.iterations, 32);
+    /// ```
     pub fn from_toml_str(input: &str) -> Result<Self, toml::de::Error> {
         toml::from_str(input)
     }
 
     /// Reads a TOML config file from disk.
     ///
+    /// # Parameters
+    ///
+    /// - `path`: Path to the TOML config file.
+    ///
+    /// # Returns
+    ///
+    /// Returns the parsed [`SearchConfig`].
+    ///
     /// # Errors
     ///
     /// Returns [`SearchConfigLoadError::Io`] if the file cannot be read,
     /// or [`SearchConfigLoadError::Toml`] if parsing fails.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     pub fn from_toml_file(path: impl AsRef<Path>) -> Result<Self, SearchConfigLoadError> {
         let path = path.as_ref();
         let contents = std::fs::read_to_string(path).map_err(SearchConfigLoadError::Io)?;
@@ -129,56 +183,152 @@ impl SearchConfig {
 pub struct SearchConfigBuilder(SearchConfig);
 
 impl SearchConfigBuilder {
-    /// Sets the iteration count.
+    /// Sets the maximum number of simulations to run.
+    ///
+    /// # Parameters
+    ///
+    /// - `iterations`: Simulation budget to store in the builder.
+    ///
+    /// # Returns
+    ///
+    /// Returns the updated builder.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn iterations(mut self, iterations: usize) -> Self {
         self.0.iterations = iterations;
         self
     }
 
-    /// Sets the exploration constant.
+    /// Sets the exploration constant used by the search policy.
+    ///
+    /// # Parameters
+    ///
+    /// - `exploration_constant`: Value used to balance exploration against exploitation.
+    ///
+    /// # Returns
+    ///
+    /// Returns the updated builder.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn exploration_constant(mut self, exploration_constant: f64) -> Self {
         self.0.exploration_constant = exploration_constant;
         self
     }
 
-    /// Sets the depth cap.
+    /// Sets the default rollout depth cap.
+    ///
+    /// # Parameters
+    ///
+    /// - `max_depth`: Maximum depth allowed during simulations.
+    ///
+    /// # Returns
+    ///
+    /// Returns the updated builder.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn max_depth(mut self, max_depth: usize) -> Self {
         self.0.max_depth = max_depth;
         self
     }
 
-    /// Selects the tree policy.
+    /// Selects the tree policy used during child selection.
+    ///
+    /// # Parameters
+    ///
+    /// - `tree_policy`: Policy to store in the builder.
+    ///
+    /// # Returns
+    ///
+    /// Returns the updated builder.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn tree_policy(mut self, tree_policy: TreePolicy) -> Self {
         self.0.tree_policy = tree_policy;
         self
     }
 
-    /// Sets heuristic blending.
+    /// Sets how strongly heuristic estimates influence simulation rewards.
+    ///
+    /// # Parameters
+    ///
+    /// - `heuristic_weight`: Blend weight for heuristic scores.
+    ///
+    /// # Returns
+    ///
+    /// Returns the updated builder.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn heuristic_weight(mut self, heuristic_weight: f64) -> Self {
         self.0.heuristic_weight = heuristic_weight;
         self
     }
 
-    /// Sets the RAVE configuration.
+    /// Sets the RAVE/AMAF configuration.
+    ///
+    /// # Parameters
+    ///
+    /// - `rave`: RAVE configuration to store.
+    ///
+    /// # Returns
+    ///
+    /// Returns the updated builder.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn rave(mut self, rave: RaveConfig) -> Self {
         self.0.rave = rave;
         self
     }
 
-    /// Enables progressive widening.
+    /// Enables progressive widening with the provided settings.
+    ///
+    /// # Parameters
+    ///
+    /// - `widening`: Progressive widening configuration to attach.
+    ///
+    /// # Returns
+    ///
+    /// Returns the updated builder.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn progressive_widening(mut self, widening: ProgressiveWideningConfig) -> Self {
         self.0.progressive_widening = Some(widening);
         self
     }
 
-    /// Builds the config.
+    /// Finalizes the builder and returns the accumulated [`SearchConfig`].
+    ///
+    /// # Parameters
+    ///
+    /// This function takes no additional parameters.
+    ///
+    /// # Returns
+    ///
+    /// Returns the built [`SearchConfig`].
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn build(self) -> SearchConfig {
         self.0

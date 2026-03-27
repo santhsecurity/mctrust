@@ -35,13 +35,37 @@ impl Reward {
     /// Neutral outcome.
     pub const DRAW: Self = Self(0.0);
 
-    /// Creates a reward with the given value.
+    /// Creates a reward wrapper from a raw floating-point value.
+    ///
+    /// # Parameters
+    ///
+    /// - `value`: Reward magnitude to store.
+    ///
+    /// # Returns
+    ///
+    /// Returns a new [`Reward`] containing `value`.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn new(value: f64) -> Self {
         Self(value)
     }
 
-    /// Returns the numeric reward value.
+    /// Returns the underlying floating-point reward value.
+    ///
+    /// # Parameters
+    ///
+    /// This function takes no additional parameters.
+    ///
+    /// # Returns
+    ///
+    /// Returns the wrapped reward value.
+    ///
+    /// # Panics
+    ///
+    /// This function does not panic.
     #[must_use]
     pub fn value(self) -> f64 {
         self.0
