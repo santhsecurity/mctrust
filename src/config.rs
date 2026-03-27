@@ -64,32 +64,6 @@ impl Default for ProgressiveWideningConfig {
     }
 }
 
-/// Parallel execution controls.
-#[derive(Clone, Debug, PartialEq)]
-#[derive(serde::Serialize, serde::Deserialize)]
-#[serde(default)]
-pub struct ParallelConfig {
-    /// Number of independently searched trees to merge at the root.
-    pub root_parallelism: usize,
-    /// Number of rollouts to evaluate in parallel from one leaf.
-    pub leaf_parallelism: usize,
-    /// Shared-tree worker count hint.
-    pub tree_parallelism: usize,
-    /// Temporary penalty applied while a worker is exploring a node.
-    pub virtual_loss: f64,
-}
-
-impl Default for ParallelConfig {
-    fn default() -> Self {
-        Self {
-            root_parallelism: 1,
-            leaf_parallelism: 1,
-            tree_parallelism: 1,
-            virtual_loss: 1.0,
-        }
-    }
-}
-
 /// Configuration for [`crate::GameSearch`].
 #[derive(Clone, Debug, PartialEq)]
 #[derive(serde::Serialize, serde::Deserialize)]
@@ -109,8 +83,6 @@ pub struct SearchConfig {
     pub rave: RaveConfig,
     /// Optional progressive widening.
     pub progressive_widening: Option<ProgressiveWideningConfig>,
-    /// Parallel execution knobs.
-    pub parallel: ParallelConfig,
 }
 
 impl Default for SearchConfig {
@@ -123,7 +95,6 @@ impl Default for SearchConfig {
             heuristic_weight: 0.35,
             rave: RaveConfig::default(),
             progressive_widening: None,
-            parallel: ParallelConfig::default(),
         }
     }
 }
@@ -210,13 +181,6 @@ impl SearchConfigBuilder {
         self
     }
 
-    /// Sets parallel execution controls.
-    #[must_use]
-    pub fn parallel(mut self, parallel: ParallelConfig) -> Self {
-        self.0.parallel = parallel;
-        self
-    }
-
     /// Builds the config.
     #[must_use]
     pub fn build(self) -> SearchConfig {
@@ -262,7 +226,6 @@ mod tests {
         assert_eq!(c.iterations, 10_000);
         assert_eq!(c.tree_policy, TreePolicy::Uct);
         assert!(c.rave.enabled);
-        assert_eq!(c.parallel.root_parallelism, 1);
     }
 
     #[test]
@@ -273,18 +236,11 @@ mod tests {
             .max_depth(10)
             .tree_policy(TreePolicy::Puct { prior_weight: 2.0 })
             .heuristic_weight(0.5)
-            .parallel(ParallelConfig {
-                root_parallelism: 4,
-                leaf_parallelism: 2,
-                tree_parallelism: 2,
-                virtual_loss: 2.5,
-            })
             .build();
 
         assert_eq!(c.iterations, 500);
         assert_eq!(c.max_depth, 10);
         assert_eq!(c.tree_policy, TreePolicy::Puct { prior_weight: 2.0 });
-        assert_eq!(c.parallel.root_parallelism, 4);
     }
 
     #[test]
@@ -294,9 +250,6 @@ mod tests {
 iterations = 64
 max_depth = 12
 
-[parallel]
-root_parallelism = 3
-
 [tree_policy]
 kind = "thompson_sampling"
 temperature = 0.25
@@ -305,7 +258,6 @@ temperature = 0.25
         .unwrap();
 
         assert_eq!(config.iterations, 64);
-        assert_eq!(config.parallel.root_parallelism, 3);
         assert_eq!(
             config.tree_policy,
             TreePolicy::ThompsonSampling { temperature: 0.25 }
@@ -327,13 +279,13 @@ temperature = 0.25
 
         let widening = parsed.progressive_widening.unwrap();
         assert_eq!(widening.minimum_children, 2);
-        assert_eq!(widening.exponent, 0.4);
+        assert!((widening.exponent - 0.4).abs() < f64::EPSILON);
     }
 
     #[test]
     fn parse_toml_with_all_sections() {
         let config = SearchConfig::from_toml_str(
-            r#"
+            r"
 iterations = 64
 max_depth = 7
 heuristic_weight = 0.42
@@ -342,23 +294,16 @@ heuristic_weight = 0.42
 enabled = false
 bias = 111.0
 
-[parallel]
-root_parallelism = 4
-leaf_parallelism = 2
-tree_parallelism = 8
-virtual_loss = 0.75
-
 [progressive_widening]
 minimum_children = 2
 coefficient = 2.5
 exponent = 0.4
-"#,
+",
         )
         .unwrap();
 
         assert!(!config.rave.enabled);
-        assert_eq!(config.rave.bias, 111.0);
-        assert_eq!(config.parallel.root_parallelism, 4);
+        assert!((config.rave.bias - 111.0).abs() < f64::EPSILON);
         assert_eq!(config.progressive_widening.as_ref().unwrap().minimum_children, 2);
     }
 

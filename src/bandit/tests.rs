@@ -1,3 +1,5 @@
+#![allow(clippy::cast_possible_truncation)]
+
 use super::*;
 
 #[test]
@@ -35,9 +37,7 @@ fn bandit_respects_budget() {
     while let Some(arm) = search.next_arm() {
         count += 1;
         search.observe(arm, 1.0);
-        if count > 100 {
-            panic!("budget not respected");
-        }
+        assert!(count <= 100, "budget not respected");
     }
 
     assert_eq!(count, 5);

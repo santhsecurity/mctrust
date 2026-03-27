@@ -96,14 +96,14 @@ mod tests {
     fn reward_add_assign() {
         let mut r = Reward::DRAW;
         r += Reward::WIN;
-        assert_eq!(r.value(), 1.0);
+        assert!((r.value() - 1.0).abs() < f64::EPSILON);
     }
 
     #[test]
     fn reward_constants() {
-        assert_eq!(Reward::WIN.value(), 1.0);
-        assert_eq!(Reward::LOSS.value(), -1.0);
-        assert_eq!(Reward::DRAW.value(), 0.0);
+        assert!((Reward::WIN.value() - 1.0).abs() < f64::EPSILON);
+        assert!((Reward::LOSS.value() + 1.0).abs() < f64::EPSILON);
+        assert!(Reward::DRAW.value().abs() < f64::EPSILON);
     }
 
     #[test]

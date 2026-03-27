@@ -110,7 +110,7 @@ mod tests {
 
     #[test]
     fn game_state_terminal_detection() {
-        assert!(matches!(GameState::Terminal(Reward::WIN).is_terminal(), true));
+        assert!(GameState::Terminal(Reward::WIN).is_terminal());
         assert!(!GameState::Ongoing.is_terminal());
         assert_eq!(GameState::Loss.reward(), Some(Reward::LOSS));
     }

@@ -10,6 +10,8 @@
 //! - Concurrent observe calls
 //! - Max u32 visits
 
+#![allow(clippy::cast_possible_truncation, clippy::cast_lossless, clippy::float_cmp)]
+
 use crate::*;
 use std::sync::Arc;
 use std::thread;
