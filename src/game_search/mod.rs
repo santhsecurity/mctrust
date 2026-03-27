@@ -2,7 +2,6 @@
 //!
 //! Implements the four MCTS phases: Selection → Expansion → Simulation → Backpropagation.
 
-
 use rand::SeedableRng;
 
 use crate::config::SearchConfig;
@@ -127,9 +126,7 @@ impl<E: Environment> GameSearch<E> {
     /// This can be used to pause and resume search work in a separate
     /// process.
     #[must_use]
-    pub fn checkpoint(
-        &self,
-    ) -> GameSearchCheckpoint<E>
+    pub fn checkpoint(&self) -> GameSearchCheckpoint<E>
     where
         E: serde::Serialize + for<'de> serde::Deserialize<'de>,
         E::Action: serde::Serialize + for<'de> serde::Deserialize<'de> + Clone,
@@ -168,7 +165,7 @@ impl<E: Environment> GameSearch<E> {
             let (node_id, mut path) = self.select(&mut env);
 
             // 2. Expansion — add one untried child if node is expandable.
-                let state = env.evaluate();
+            let state = env.evaluate();
             if state == GameState::Ongoing && self.should_expand(node_id) {
                 let expanded = self.expand(node_id, &mut env);
                 if expanded != node_id {
@@ -232,7 +229,6 @@ impl<E: Environment> GameSearch<E> {
     pub fn uses_rave(&self) -> bool {
         self.config.rave.enabled
     }
-
 }
 
 mod phases;

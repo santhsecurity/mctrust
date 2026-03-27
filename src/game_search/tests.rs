@@ -87,7 +87,12 @@ impl Environment for PriorGame {
     }
 
     fn action_priors(&self, actions: &[Self::Action]) -> Option<Vec<f64>> {
-        Some(actions.iter().map(|a| if *a == 1 { 1.0 } else { 0.1 }).collect())
+        Some(
+            actions
+                .iter()
+                .map(|a| if *a == 1 { 1.0 } else { 0.1 })
+                .collect(),
+        )
     }
 }
 
@@ -194,7 +199,10 @@ fn deterministic_with_same_seed() {
         target: 3,
         move_count: 0,
     };
-    let config = SearchConfig::builder().iterations(1_000).max_depth(10).build();
+    let config = SearchConfig::builder()
+        .iterations(1_000)
+        .max_depth(10)
+        .build();
 
     let mut s1 = GameSearch::with_seed(game.clone(), config.clone(), 42);
     let mut s2 = GameSearch::with_seed(game, config, 42);

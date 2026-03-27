@@ -22,8 +22,7 @@ pub enum TreePolicy {
 }
 
 /// Configuration for AMAF/RAVE value blending.
-#[derive(Clone, Debug, PartialEq)]
-#[derive(serde::Serialize, serde::Deserialize)]
+#[derive(Clone, Debug, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(default)]
 pub struct RaveConfig {
     /// Enables or disables RAVE.
@@ -42,8 +41,7 @@ impl Default for RaveConfig {
 }
 
 /// Progressive widening for large or continuous action spaces.
-#[derive(Clone, Debug, PartialEq)]
-#[derive(serde::Serialize, serde::Deserialize)]
+#[derive(Clone, Debug, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(default)]
 pub struct ProgressiveWideningConfig {
     /// Base number of children always allowed.
@@ -65,8 +63,7 @@ impl Default for ProgressiveWideningConfig {
 }
 
 /// Configuration for [`crate::GameSearch`].
-#[derive(Clone, Debug, PartialEq)]
-#[derive(serde::Serialize, serde::Deserialize)]
+#[derive(Clone, Debug, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(default)]
 pub struct SearchConfig {
     /// Number of simulations to execute.
@@ -304,7 +301,14 @@ exponent = 0.4
 
         assert!(!config.rave.enabled);
         assert!((config.rave.bias - 111.0).abs() < f64::EPSILON);
-        assert_eq!(config.progressive_widening.as_ref().unwrap().minimum_children, 2);
+        assert_eq!(
+            config
+                .progressive_widening
+                .as_ref()
+                .unwrap()
+                .minimum_children,
+            2
+        );
     }
 
     #[test]

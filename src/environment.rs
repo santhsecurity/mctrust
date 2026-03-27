@@ -3,8 +3,7 @@
 use crate::reward::Reward;
 
 /// Terminal or non-terminal state of an environment.
-#[derive(Debug, Clone, Copy, PartialEq)]
-#[derive(serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, serde::Serialize, serde::Deserialize)]
 pub enum GameState {
     /// Search can continue from this state.
     Ongoing,
@@ -50,8 +49,7 @@ impl std::fmt::Display for GameState {
 }
 
 /// Optional heuristic signals for a state.
-#[derive(Debug, Clone, Copy, PartialEq, Default)]
-#[derive(serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Default, serde::Serialize, serde::Deserialize)]
 pub struct Heuristic {
     /// Estimated value of the current state.
     pub value: Option<Reward>,

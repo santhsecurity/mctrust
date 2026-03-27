@@ -89,28 +89,26 @@
 //!   in computer Go" (2011)
 //! - Browne et al., "A Survey of Monte Carlo Tree Search Methods" (2012)
 
-
 #![warn(clippy::pedantic)]
 #![forbid(unsafe_code)]
-
 #![warn(missing_docs)]
 #![allow(clippy::must_use_candidate)]
 #![allow(clippy::needless_pass_by_value)]
 
+mod bandit;
 mod config;
 mod environment;
 mod game_search;
 mod node;
 mod reward;
-mod bandit;
 
 #[cfg(test)]
 mod adversarial_tests;
 
+pub use bandit::{BanditConfig, BanditSearch, BanditSearchCheckpoint};
 pub use config::{ProgressiveWideningConfig, SearchConfig, TreePolicy};
-pub use environment::{Environment, GameState};
 pub use environment::Heuristic;
+pub use environment::{Environment, GameState};
 pub use game_search::{GameSearch, GameSearchCheckpoint};
 pub use node::NodeStats;
 pub use reward::Reward;
-pub use bandit::{BanditConfig, BanditSearch, BanditSearchCheckpoint};

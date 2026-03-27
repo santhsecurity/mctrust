@@ -1,10 +1,10 @@
-use rand::seq::SliceRandom;
-use rand::Rng;
+use super::GameSearch;
 use crate::config::{ProgressiveWideningConfig, TreePolicy};
 use crate::environment::{Environment, GameState};
 use crate::node::Node;
 use crate::reward::Reward;
-use super::GameSearch;
+use rand::seq::SliceRandom;
+use rand::Rng;
 
 impl<E: Environment> GameSearch<E> {
     // ── Internal phases ─────────────────────────────────────────
@@ -229,5 +229,3 @@ impl<E: Environment> GameSearch<E> {
             .and_then(|id| self.nodes[id as usize].action.clone())
     }
 }
-
-

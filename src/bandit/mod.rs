@@ -20,13 +20,13 @@ mod tests;
 
 #[allow(unused_imports)] // Re-exported for downstream consumers
 pub use config::{BanditConfig, BanditConfigBuilder};
-pub use node::GroupStats;
 use node::BanditNode;
+pub use node::GroupStats;
 
 use std::collections::HashMap;
 
-use rand::SeedableRng;
 use rand::seq::SliceRandom;
+use rand::SeedableRng;
 ///
 /// Arms are grouped by category. The engine maintains a two-level tree:
 /// root → group nodes → arm selection within groups.
@@ -164,9 +164,9 @@ impl BanditSearch {
             idx
         } else {
             // Safety: conversion is validated below to avoid truncation.
-        let Ok(idx) = u32::try_from(self.nodes.len()) else {
-            return;
-        };
+            let Ok(idx) = u32::try_from(self.nodes.len()) else {
+                return;
+            };
             self.nodes.push(BanditNode {
                 visits: 0,
                 reward: 0.0,

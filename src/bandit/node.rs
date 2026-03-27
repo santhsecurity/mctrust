@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use super::config::BanditConfig;
+use serde::{Deserialize, Serialize};
 
 /// Internal node for the two-level bandit tree.
 #[derive(Debug, Clone, Serialize, Deserialize)]

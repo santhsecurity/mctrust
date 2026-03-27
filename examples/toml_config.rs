@@ -1,9 +1,7 @@
 use std::error::Error;
 use std::path::Path;
 
-use mctrust::{
-    Environment, GameSearch, GameState, Heuristic, Reward, SearchConfig, TreePolicy,
-};
+use mctrust::{Environment, GameSearch, GameState, Heuristic, Reward, SearchConfig, TreePolicy};
 
 #[derive(Clone)]
 struct ConfigToy {
