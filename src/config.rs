@@ -236,8 +236,16 @@ pub enum SearchConfigLoadError {
 impl std::fmt::Display for SearchConfigLoadError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::Io(error) => write!(f, "failed to read config: {error}"),
-            Self::Toml(error) => write!(f, "failed to parse TOML config: {error}"),
+            Self::Io(error) => {
+                write!(
+                    f,
+                    "failed to read config: {error}. Fix: check file path permissions and ownership, then retry with a readable configuration file."
+                )
+            }
+            Self::Toml(error) => write!(
+                f,
+                "failed to parse TOML config: {error}. Fix: validate the section layout and ensure key/value types match the expected schema."
+            ),
         }
     }
 }

@@ -155,9 +155,18 @@ impl BanditSearch {
             return;
         }
 
+        if self.nodes.len() == u32::MAX as usize {
+            return;
+        }
+
         // Lazily create the group node.
-        let node_idx = *self.group_to_node.entry(group_id).or_insert_with(|| {
-            let idx = u32::try_from(self.nodes.len()).unwrap_or(u32::MAX);
+        let node_idx = if let Some(&idx) = self.group_to_node.get(&group_id) {
+            idx
+        } else {
+            // Safety: conversion is validated below to avoid truncation.
+        let Ok(idx) = u32::try_from(self.nodes.len()) else {
+            return;
+        };
             self.nodes.push(BanditNode {
                 visits: 0,
                 reward: 0.0,
@@ -170,8 +179,10 @@ impl BanditSearch {
                 next_untried: 0,
             });
             self.nodes[0].children.push(idx);
+
+            self.group_to_node.insert(group_id, idx);
             idx
-        });
+        };
 
         self.nodes[node_idx as usize].arms.push(arm_id);
         self.arm_to_node.insert(arm_id, node_idx);
@@ -304,4 +315,3 @@ impl BanditSearch {
         self.pulls_executed
     }
 }
-
